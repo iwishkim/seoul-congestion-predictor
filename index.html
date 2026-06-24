@@ -359,15 +359,20 @@ window.__DATA__={"meta":{"levels":["여유","보통","약간 붐빔","붐빔"],"
     $('rhythm-title').textContent=`${area} · ${dt==='wd'?'평일':'주말'} 하루 리듬`;
   }
 
-  function render(){ renderMap(); renderCard(); renderBars(); }
+  function render(){ renderMap(); renderCard(); renderBars();
+    if(document.activeElement!==$('area')) $('area').value=area; }
 
   function setHour(h){ hour=h; $('hour').value=h; $('nowh').textContent=h; render(); }
   $('hour').addEventListener('input',e=>setHour(+e.target.value));
   $('t-wd').onclick=()=>{ dt='wd'; $('t-wd').setAttribute('aria-pressed','true'); $('t-we').setAttribute('aria-pressed','false'); render(); };
   $('t-we').onclick=()=>{ dt='we'; $('t-we').setAttribute('aria-pressed','true'); $('t-wd').setAttribute('aria-pressed','false'); render(); };
+  const areaInput=$('area');
   function pick(v){ if(D.model[v]){ area=v; render(); } }
-  $('area').addEventListener('change',e=>pick(e.target.value.trim()));
-  $('area').addEventListener('input',e=>pick(e.target.value.trim()));
+  // 칸을 누르면 비워서 전체 목록이 보이게 하고, 그냥 빠져나가면 현재 지역명 복원
+  areaInput.addEventListener('focus',()=>{ areaInput.value=''; });
+  areaInput.addEventListener('blur',()=>{ if(!D.model[areaInput.value.trim()]) areaInput.value=area; });
+  areaInput.addEventListener('change',e=>pick(e.target.value.trim()));
+  areaInput.addEventListener('input',e=>pick(e.target.value.trim()));
 
   $('play').onclick=()=>{
     const icon=$('playicon');
